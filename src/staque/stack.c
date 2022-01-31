@@ -10,55 +10,45 @@ stack initstack(){
     return S;
 }
 
-int emptystack(stack S){
-    if(S == NULL) return 1;
+int empty(stack S){
+    if (S -> next == NULL) return 1;
     else return 0;
 }
 
 int top(stack S){
-    if(emptystack(S)){
-        printf("Stack is empty\n");
-        return 0;
-    }
-    else return S -> data;
+    if (empty(S)) return 0;
+    else return S -> next -> data;
 }
 
 stack push(stack S, int x){
-    stack temp;
-    temp = (stack)malloc(sizeof(node));
-    temp -> data = x;
-    temp -> next = S;
-    return temp;
+    node *newnode;
+    newnode = (node *)malloc(sizeof(node));
+    newnode -> data = x;
+    newnode -> next = S -> next;
+    S -> next = newnode;
+    return S;
 }
 
 stack pop(stack S){
-    if(emptystack(S)){
-        printf("Stack is empty\n");
-        return S;
-    }
-    else{
-        stack temp;
-        temp = S -> next;
-        free(S);
-        return temp;
-    }
+    node *temp;
+    if (empty(S)) return S;
+    temp = S -> next;
+    S -> next = temp -> next;
+    free(temp);
+    return S;
 }
 
 void printstack(stack S){
-    if(emptystack(S)){
-        printf("Stack is empty\n");
-        return;
+    node *temp;
+    temp = S -> next;
+    printf("Printing stack: ");
+    while (temp != NULL){
+        printf("%d ", temp -> data);
+        temp = temp -> next;
     }
-    else{
-        stack temp;
-        temp = S;
-        while(temp != NULL){
-            printf("%d ", temp -> data);
-            temp = temp -> next;
-        }
-        printf("\n");
-    }
+    printf("\n");
 }
+
 
 stack destroystack(stack S){
     node *p;
