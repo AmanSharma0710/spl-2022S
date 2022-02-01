@@ -28,7 +28,6 @@ int main(){
         return 0;
     }
     
-    printf("Entered file name is: %s.\n", FName);
     GRAPH G = readGraph(FName);
     DFS(G);
     BFS(G);

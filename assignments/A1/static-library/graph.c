@@ -32,20 +32,9 @@ GRAPH readGraph(char *FName){
         G->adj[y][x] = weight;
     }
     fclose(file);
-    printf("Printing Graph:\nNodes = %d\nEdges = %d\nAdj Matrix = \n", G->nodes, G->edges);
-    for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
-            printf("%d ", G->adj[i][j]);
-        }
-        printf("\n");
-    }
     return G;
 }
 
-void visit(int vertice, int *visited){
-    printf("%d ", vertice);
-    visited[vertice] = 1;
-}
 
 void DFS(GRAPH G){
     int *visited = (int *)malloc(G->nodes * sizeof(int));
@@ -57,14 +46,16 @@ void DFS(GRAPH G){
     for(int i = 0; i < G->nodes; i++){
         if(visited[i] == 0){            //For all unvisited nodes
             S = push(S, i);             //Push node onto stack and mark as visited
-            visit(i, visited);
             while(!isEmpty(S)){        //While stack is not empty, we keep adding unvisited nodes
                 int u;
                 S = pop(S, &u);
-                for(int j = 0; j < G->nodes; j++){
-                    if(G->adj[u][j] != 0 && visited[j] == 0){
-                        S = push(S, j);
-                        visit(j, visited);
+                if(!visited[u]){
+                    visited[u] = 1;
+                    printf("%d ", u);
+                    for(int j = G->nodes-1; j >= 0; j--){
+                        if(G->adj[u][j] != 0 && visited[j] == 0){
+                            S = push(S, j);
+                        }
                     }
                 }
             }
@@ -85,14 +76,15 @@ void BFS(GRAPH G){
     for(int i = 0; i < G->nodes; i++){
         if(visited[i] == 0){            //For all unvisited nodes
             Q = enqueue(Q, i);          //Enqueue node onto queue and mark as visited
-            visit(i, visited);
+            visited[i] = 1;
             while(!isEmpty(Q)){        //While queue is not empty, we keep adding unvisited nodes
                 int u;
                 Q = dequeue(Q, &u);
+                printf("%d ", u);
                 for(int j = 0; j < G->nodes; j++){
                     if(G->adj[u][j] != 0 && visited[j] == 0){
                         Q = enqueue(Q, j);
-                        visit(j, visited);
+                        visited[j] = 1;
                     }
                 }
             }
@@ -103,44 +95,57 @@ void BFS(GRAPH G){
     return;
 }
 
-void mergeEdges(graph_edge *edges, int l, int middle, int r){       //Helper function for mergeSort
+void mergeEdges(graph_edge *edges, graph_edge *temp, int l, int middle, int r){       //Helper function for mergeSort
     int i = l;
     int j = middle + 1;
     int k = l;
-    graph_edge *temp = (graph_edge *)malloc((r - l + 1) * sizeof(graph_edge));
-    while(i <= middle && j <= r){
+    while((i <= middle) && (j <= r)){
         if(edges[i].weight <= edges[j].weight){
-            temp[k++] = edges[i++];
+            temp[k].from = edges[i].from;
+            temp[k].to = edges[i].to;
+            temp[k].weight = edges[i].weight;
+            i++; k++;
         }
         else{
-            temp[k++] = edges[j++];
+            temp[k].from = edges[j].from;
+            temp[k].to = edges[j].to;
+            temp[k].weight = edges[j].weight;
+            j++; k++;
         }
     }
     while(i <= middle){
-        temp[k++] = edges[i++];
+        temp[k].from = edges[i].from;
+        temp[k].to = edges[i].to;
+        temp[k].weight = edges[i].weight;
+        i++; k++;
     }
     while(j <= r){
-        temp[k++] = edges[j++];
+        temp[k].from = edges[j].from;
+        temp[k].to = edges[j].to;
+        temp[k].weight = edges[j].weight;
+        j++; k++;
     }
     for(int i = l; i <= r; i++){
-        edges[i] = temp[i];
+        edges[i].from = temp[i].from;
+        edges[i].to = temp[i].to;
+        edges[i].weight = temp[i].weight;
     }
-    free(temp);
     return;
 }
 
-void sortEdges(graph_edge *edges, int l, int r){        //We use merge sort to sort the edges in O(nlogn) time and in ascending order
+void sortEdges(graph_edge *edges, graph_edge *temp, int l, int r){        //We use merge sort to sort the edges in O(nlogn) time and in ascending order
     if(l<r){
         int middle = l + (r-l)/2;
-        sortEdges(edges, l, middle);
-        sortEdges(edges, middle+1, r);
-        mergeEdges(edges, l, middle, r);
+        sortEdges(edges, temp, l, middle);
+        sortEdges(edges, temp, middle+1, r);
+        mergeEdges(edges, temp, l, middle, r);
     }
     return;
 }
 
 void MST(GRAPH G){
     graph_edge *edges = (graph_edge *)malloc(G->edges * sizeof(graph_edge));
+    graph_edge *temp = (graph_edge *)malloc(G->edges * sizeof(graph_edge));
     int index = 0, n = G->nodes;
     for(int i=0; i<n; i++){
         for(int j=i; j<n; j++){
@@ -149,18 +154,13 @@ void MST(GRAPH G){
                 edges[index].to = j;
                 edges[index].weight = G->adj[i][j];
                 index++;
-                printf("Edge %d: %d %d %d\n", index, i, j, G->adj[i][j]);
             }
         }
     }
-    printf("Before sorting:\n");
-    sortEdges(edges, 0, G->edges-1);        //We obtain the edges in ascending order
-    printf("After sorting:\n");
+    sortEdges(edges, temp, 0, G->edges-1);        //We obtain the edges in ascending order
     //Now we can apply Kruskal's algorithm to find the minimum spanning tree and print it in increasing order of weights
     UNION_FIND uf = createUF(n);
-    printf("Line 1\n");
     int *indexInUF = (int *)malloc(n * sizeof(int));
-    printf("Line 2\n");
     for(int i = 0; i < n; i++){
         uf = makeSetUF(uf, i, &indexInUF[i]);
     }
@@ -177,6 +177,7 @@ void MST(GRAPH G){
     }
     printf("Weight: %d\n", weight);     //Print the weight of the MST
     free(edges);
+    free(temp);
     free(indexInUF);
     return;
 }

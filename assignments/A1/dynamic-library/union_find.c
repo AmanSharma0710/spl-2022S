@@ -5,6 +5,9 @@
 UNION_FIND createUF(int n){
     UNION_FIND uf = (UNION_FIND)malloc(sizeof(struct _union_find));
     uf->nodes = (NODE_PTR *)malloc(sizeof(NODE_PTR)*n);
+    for(int i=0; i<n; i++){
+        uf->nodes[i] = NULL;
+    }
     uf->size = n;
     return uf;
 }
