@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
-#include "llist.h"
-#include "queue.h"
+#include <llist.h>
+#include <queue.h>
 
 QUEUE createQueue(){
     QUEUE q = createList();

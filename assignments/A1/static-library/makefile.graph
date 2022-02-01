@@ -1,0 +1,17 @@
+SHELL = /bin/sh
+CC = gcc
+CFLAGS = -Wall
+LIBNAME = libsplgraph.a
+OBJS = graph.o
+RM = rm -f
+
+$(LIBNAME): $(OBJS)
+	$(AR) rcs $@ $^
+install: $(LIBNAME)
+	cp $(LIBNAME) /usr/local/lib
+
+clean:
+	$(RM) $(OBJS)
+
+distclean: clean
+	$(RM) $(LIBNAME)

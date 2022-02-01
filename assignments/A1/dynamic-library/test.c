@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
-#include "union_find.h"
+#include <union_find.h>
 
 int main(){
     UNION_FIND uf = createUF(10);

@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
-#include "llist.h"
-#include "stack.h"
+#include <llist.h>
+#include <stack.h>
 
 STACK createStack(){
     STACK s = createList();

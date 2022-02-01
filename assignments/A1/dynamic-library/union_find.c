@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "union_find.h"
+#include <union_find.h>
 
 UNION_FIND createUF(int n){
     UNION_FIND uf = (UNION_FIND)malloc(sizeof(struct _union_find));
