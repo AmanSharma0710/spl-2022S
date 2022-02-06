@@ -5,7 +5,7 @@ LIBRARIES = -lsplgraph -lsplds
 MAKE = make install
 
 graph.out: main.c
-	$(CC) $(CFLAGS) -o $@ $^ $(LIBRARIES)
+	$(CC) $(CFLAGS) -o $@ $^ -L/usr/include/lib/ $(LIBRARIES)
 	
 all:
 	$(MAKE) -f makefile.basic; $(MAKE) distclean -f makefile.basic
